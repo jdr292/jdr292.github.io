@@ -5,7 +5,7 @@
 <body>
   <a href="boop.txt">boop</a>
   <p> sup world </p>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r70/three.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r70/three.js"></script>
   <script>
             var scene = new THREE.Scene();
             var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
@@ -14,18 +14,57 @@
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
 
-            var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-            var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-            var cube = new THREE.Mesh( geometry, material );
-            scene.add( cube );
+            var boxes = []
+            for (var x = -2.5; x < 5; x++) {
+                for (var z = -2.5; z < 5; z++) {
+                    var geo = new THREE.BoxGeometry(.95,.95,.95);
+                    var material = new THREE.MeshLambertMaterial({color:Math.random()*Math.exp(16,6)});
+                    var cube = new THREE.Mesh(geo, material);
+                    cube.position.x = x;
+                    cube.position.z = z;
+                    cube.orig = {}
+                    cube.orig.x = x;
+                    cube.orig.z = z;
+                    boxes.push(cube);
+                    scene.add(cube);
+                }
+            }
 
-            camera.position.z = 5;
+            //var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+            //var material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+            //var cube = new THREE.Mesh( geometry, material );
+            //scene.add( cube );
 
+            camera.position.x = -10;
+            camera.position.y = 7;
+            camera.position.z = -10;
+            camera.lookAt(new THREE.Vector3());
+
+            var light = new THREE.PointLight(0xffffff, 1, 100);
+            light.position.z = -10;
+            light.position.y = 2;
+            scene.add(light);
+
+            var otherLight = new THREE.PointLight(0xffffff, 1, 100);
+            otherLight.position.x = -10;
+            otherLight.position.y = 2;
+            scene.add(otherLight);
+
+            count = 0
             var render = function () {
                 requestAnimationFrame( render );
 
-                cube.rotation.x += 0.1;
-                cube.rotation.y += 0.1;
+                for (var i = 0; i < boxes.length; i++) {
+                    var select = 1// Math.random() > 0.5 ? 1 : 0;
+                    boxes[i].rotation.x += 0.01*select;
+                    boxes[i].rotation.y += 0.01*select*-1;
+                    boxes[i].position.x = boxes[i].orig.x + Math.sin(count);
+                    boxes[i].position.z = boxes[i].orig.z + Math.cos(count);
+                    count += 0.001;
+                }
+
+                //cube.rotation.x += 0.01;
+                //cube.rotation.y += 0.01;
 
                 renderer.render(scene, camera);
             };
