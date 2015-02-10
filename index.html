@@ -13,8 +13,8 @@
             document.body.appendChild( renderer.domElement );
 
             var boxes = []
-            for (var x = -2.5; x < 5; x++) {
-                for (var z = -2.5; z < 5; z++) {
+            for (var x = -2.5; x < 2.5; x++) {
+                for (var z = -2.5; z < 2.5; z++) {
                     var geo = new THREE.BoxGeometry(.95,.95,.95);
                     var material = new THREE.MeshLambertMaterial({color:Math.random()*Math.exp(16,6)});
                     var cube = new THREE.Mesh(geo, material);
@@ -38,6 +38,12 @@
             camera.position.z = -10;
             camera.lookAt(new THREE.Vector3());
 
+            var camLight = new THREE.PointLight(0xffffff, 0.75, 100);
+            camLight.position.x = camera.position.x;
+            camLight.position.y = camera.position.y;
+            camLight.position.z = camera.position.z;
+            scene.add(camLight);
+
             var light = new THREE.PointLight(0xffffff, 1, 100);
             light.position.z = -10;
             light.position.y = 2;
@@ -48,21 +54,22 @@
             otherLight.position.y = 2;
             scene.add(otherLight);
 
-            count = 0
+            var count = 0
             var render = function () {
                 requestAnimationFrame( render );
 
                 for (var i = 0; i < boxes.length; i++) {
-                    var select = 1// Math.random() > 0.5 ? 1 : 0;
-                    boxes[i].rotation.x += 0.01*select;
-                    boxes[i].rotation.y += 0.01*select*-1;
+                    boxes[i].rotation.x += 0.01
+                    boxes[i].rotation.y += 0.01;
                     boxes[i].position.x = boxes[i].orig.x + Math.sin(count);
                     boxes[i].position.z = boxes[i].orig.z + Math.cos(count);
                     count += 0.001;
                 }
 
-                //cube.rotation.x += 0.01;
-                //cube.rotation.y += 0.01;
+                light.position.x = Math.cos(count)*-10;
+                light.position.z = Math.sin(count)*-10
+                otherLight.position.x = (-Math.sin(count))*-10;
+                otherLight.position.z = (-Math.cos(count))*-10
 
                 renderer.render(scene, camera);
             };
